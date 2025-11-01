@@ -30,7 +30,7 @@ class IngestionState(BaseModel):
 def parse_pdf_node(state: IngestionState) -> Dict[str, Any]:
     """解析PDF文件"""
     try:
-        text = parse_pdf(file_path=state.file_path)
+        text = parse_pdf(parse_type=settings.pdf_parse_type, file_path=state.file_path)
         return {"raw_text": text, "status": "pdf_parsed"}
     except Exception as e:
         return {"status": "error", "error": f"解析PDF失败: {str(e)}"}

@@ -21,6 +21,12 @@ TEXT_EMBEDDING_MODEL=
 
 # ===================== 搜索参数配置 =====================
 TOP_K=3  # 默认值3，可根据需求修改
+
+
+# ===================== pdf解析服务=====================
+PDF_PARSE_SERVER=
+PDF_PARSE_TYPE=local  # local/server  默认值local，server表示使用服务端解析比如调用mineru或deepseek-ocr的接口，需要在pdf_processor.py中适配输出
+# 本地部署deepseek-ocr参考https://blog.csdn.net/huanxingchen1/article/details/154193407?spm=1001.2014.3001.5501
 ```
 
 
@@ -45,3 +51,4 @@ streamlit run app.py
 2. 等待文档处理完成
 3. 在聊天框中输入问题
 4. 查看 AI 生成的回答及引用来源
+![img.png](images/img.png)

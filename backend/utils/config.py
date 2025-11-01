@@ -38,5 +38,9 @@ class Config():
     # 搜索配置
     top_k: int = os.getenv("TOP_K")
 
+    # pdf解析服务
+    pdf_api_url: str = os.getenv("PDF_PARSE_SERVER")
+    pdf_parse_type: str = os.getenv("PDF_PARSE_TYPE")
+
 
 settings = Config()
