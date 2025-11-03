@@ -11,9 +11,13 @@ import PyPDF2
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from backend.utils.config import settings
+from backend.utils.split_md_ast import AstMarkdownSplitter
 import os
 import json
 import requests
+import mistletoe
+from mistletoe.block_token import Document
+
 
 
 def process_pdf_server(file_path, prompt=None, skip_repeat=None):
@@ -115,21 +119,43 @@ def split_text_into_chunks(text, chunk_size=1000, chunk_overlap=100):
     :param chunk_overlap:
     :return:
     """
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", ".", " ", ""]
-    )
+    def is_markdown_precise(text: str) -> bool:
+        try:
+            # 尝试将文本解析为Markdown语法树
+            doc = mistletoe.Document(text)
+            # 若解析成功且生成了有效节点（非空），判定为Markdown
+            return isinstance(doc, Document) and len(doc.children) > 0
+        except Exception:
+            # 解析失败（如语法错误），判定为非Markdown
+            return False
 
-    chunks = text_splitter.split_text(text)
+    if is_markdown_precise(text):
+        # 如果是Markdown，利用ast md chunk
+        chunks = AstMarkdownSplitter().split_text(text)
+        # 创建Document对象列表
+        documents = [
+            Document(
+                page_content=chunk,
+                metadata={"chunk_id": i}
+            ) for i, chunk in enumerate(chunks)
+        ]
+    else:
+        # 非md 使用RecursiveCharacterTextSplitter
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=["\n\n", "\n", ".", " ", ""]
+        )
 
-    # 创建Document对象列表
-    documents = [
-        Document(
-            page_content=chunk,
-            metadata={"chunk_id": i}
-        ) for i, chunk in enumerate(chunks)
-    ]
+        chunks = text_splitter.split_text(text)
+
+        # 创建Document对象列表
+        documents = [
+            Document(
+                page_content=chunk,
+                metadata={"chunk_id": i}
+            ) for i, chunk in enumerate(chunks)
+        ]
 
     return documents
 

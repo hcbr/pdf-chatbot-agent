@@ -1,5 +1,7 @@
 # pdf-chatbot-agent
 AI PDF chatbot agent built with LangChain &amp; LangGraph,  provide multiple PDF parsing methods.
+
+文档chunk优化：分析markdown文本ast结构进行chunk，提升召回效果。参考：https://gist.github.com/eavae/9b9cf289a17c2dd86fe42cbd17ede519
 ## 环境变量配置 (backend/.env.example)  修改utils下config中的env文件路径。
 
 ```shell
